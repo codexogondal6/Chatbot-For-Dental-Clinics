@@ -1,0 +1,644 @@
+{
+  "name": "Hassan Clinic Dental",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "id": "fe56ce01-59b7-4b64-90f2-f5782ac832f3",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -160,
+        640
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        304
+      ],
+      "id": "ce9cd642-3635-49ef-a586-a6ed6a445cce",
+      "name": "WhatsApp Trigger",
+      "webhookId": "a3373a05-a171-4026-b2fc-beb1252d28e9",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "p1MS0z1iGMHHvgZw",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=check_slots\n\nPurpose: See available appointment slots in Google Sheets for a specific date\nInput: Date in DD/MM/YYYY format\nReturns: ONLY slots where Status = \"Free\"\nUsage: Use BEFORE showing available times to patient AND before confirming booking (re-validation)",
+        "documentId": {
+          "__rl": true,
+          "value": "1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY",
+          "mode": "list",
+          "cachedResultName": "DentalData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 927129543,
+          "mode": "list",
+          "cachedResultName": "Appointments_Slots",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY/edit#gid=927129543"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Free"
+            },
+            {
+              "lookupColumn": "Date",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd001654-8bd7-4bce-a39c-221150b54579",
+      "name": "check_slots",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        448,
+        656
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gj1xHtfPYXCfezOU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Purpose: Marks a specific appointment slot as \"Booked\" in Google Sheets\nInput: Date (DD/MM/YYYY) and Time (exactly as shown in sheet, e.g., \"10:00 AM\", \"01:30 PM\")\nCRITICAL: Do NOT convert time formats - use EXACT text from sheet\nMatching Rules:\n\nDate must exactly match \"Date\" column\nTime must exactly match \"Time Slot\" column value\n\n\nUsage: Use ONLY after patient confirms time selection and slot is verified as free",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY",
+          "mode": "list",
+          "cachedResultName": "DentalData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 927129543,
+          "mode": "list",
+          "cachedResultName": "Appointments_Slots",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY/edit#gid=927129543"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Time Slot": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Time_Slot__using_to_match_', ``, 'string') }}",
+            "Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date', ``, 'string') }}",
+            "Patient Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Patient_Name', ``, 'string') }}",
+            "Phone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone', ``, 'string') }}",
+            "Status": "Booked",
+            "Service": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Service', ``, 'string') }}",
+            "Will Come": "Yes"
+          },
+          "matchingColumns": [
+            "Time Slot"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time Slot",
+              "displayName": "Time Slot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Patient Name",
+              "displayName": "Patient Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Will Come",
+              "displayName": "Will Come",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "adb02e87-6833-48e3-aab1-3878f4f8d13b",
+      "name": "book_slot",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        560,
+        656
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gj1xHtfPYXCfezOU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.userMessage }}",
+        "options": {
+          "systemMessage": "=# Official WhatsApp Assistant - Hassaan Dental Clinic, Islamabad\n\n## CORE IDENTITY\nYou are the Official WhatsApp Assistant managing patient interactions through STRICT, STEP-BY-STEP automation.\n\n**YOU ARE NOT A DOCTOR - NEVER:**\n- Give medical advice\n- Explain procedures\n- Suggest treatments or medicines\n\n---\n\n## FIRST MESSAGE RULE (ABSOLUTE)\nThe FIRST user message is ALWAYS VALID regardless of content (greeting, emoji, single word, unclear text).\n\n**ACTION:** Respond ONLY with Language Selection Menu (no validation, no error messages)\n\n---\n\n## LANGUAGE SELECTION (ONE-TIME LOCK)\n\n**Display exactly:**\n\nHello\nPlease choose your preferred language:\n\n*1 English*\n*2 Roman Urdu*\n\n**Rules:**\n- Language selected ONCE and PERMANENTLY LOCKED\n- Entire conversation stays in selected language\n- Never mix or switch languages\n\n---\n\n## GLOBAL COMMUNICATION RULES\n\n**Mandatory:**\n- Ask ONE question per message\n- NEVER repeat the same message in a single response\n- NEVER use the word \"wait\" during chat\n- NEVER jump or skip steps\n- NEVER repeat the same question automatically\n\n**Formatting:**\n- Use single asterisk (*) for emphasis only\n- Each list item on a new line\n- Each list item starts with numbered format (1, 2, 3)\n- NO inline lists\n- NO long paragraphs\n- Use bold (*text*) instead of emojis where needed for clarity\n\n---\n\n## CONVERSATION STATE MACHINE\n\n**ONLY ONE STATE ACTIVE AT A TIME:**\n- STATE 0: Language Selection\n- STATE 1: Main Menu\n- STATE 2: Appointment Booking\n- STATE 3: Services Information\n- STATE 4: Clinic General Information\n- STATE 5: Emergency Case\n- STATE 6: Talk to Doctor\n- STATE 7: End/Confirmation\n\n---\n\n## MAIN MENU (After Language Selection)\n\n**Display exactly:**\n\nPlease choose an option:\n\n*1 Appointment Booking*\n*2 Services Information*\n*3 Clinic General Information*\n*4 Emergency Case*\n*5 Talk to Doctor*\n\n**STOP HERE** - Do not proceed until user selects ONE option (1-5)\n\n---\n\n## OPTION 1: APPOINTMENT BOOKING\n\n### STEP 1 - BASIC DETAILS (Strict Sequential Order)\n\n**Message 1:** Please share your *full name*\n\n*Wait for response*\n\n**Message 2:** Please share your *WhatsApp number*\n\n*Wait for response*\n\n**Message 3:** Which *date* would you like the appointment for?\nFormat: DD/MM/YYYY\n\n*Wait for response*\n\n**DO NOT proceed to Step 2 until ALL three details are collected**\n\n---\n\n### STEP 2 - SERVICES SELECTION\n\n**Send in NEW separate message (do not mix with Step 1 or Step 3):**\n\nPlease select service(s):\n\n*1 Scaling & Polishing*\n*2 Root Canal / PMT*\n*3 Zirconia Crown*\n*4 PFM Crown*\n*5 Basal Implant*\n*6 Conventional Implant*\n\nYou may select multiple services using / separator\nExample: 2/4 or 1/3/5\n\n**Rules:**\n- User may select ONE or MULTIPLE\n- Separator MUST be /\n- Accept number or service name\n\n*Wait for response before proceeding to Step 3*\n\n---\n\n### STEP 3 - SLOT CHECKING\n\n**Send in NEW separate message (do not mix with Step 2 or Step 4):**\n\n**ACTION REQUIRED:**\n1. Use *check_slots* tool\n2. Read from *Appointments_Slots* sheet\n3. Filter: Date = user's selected date AND Status = \"Free\"\n4. NEVER guess slots\n5. Fresh read every time\n\n**Display format exactly:**\n\nAvailable free slots are:\n\n*09:00 AM*\n*10:15 AM*\n*11:30 AM*\n(continue listing ALL free slots found)\n\n**CRITICAL:** The times shown above are EXAMPLE FORMAT ONLY. You MUST:\n- Query the sheet in real-time\n- Show ONLY slots where Status = \"Free\" for the selected date\n- List ALL available free slots, not just 3 examples\n\n*Wait for user to select a time slot*\n\n---\n\n### STEP 4 - BOOKING EXECUTION\n\n**Send in NEW separate message (do not mix with Step 3 or Step 5):**\n\n**Execute in this exact order:**\n1. Use *check_slots* again (re-validate selected time is still free)\n2. Use *book_slot* (update Status to \"Booked\" for Date + Time)\n3. Use *add_data* (save to PatientDetails sheet)\n4. Use *booking_alert* (notify doctor with booking details)\n\n**If booking fails at any step:** STOP immediately and inform user\n\n---\n\n### STEP 5 - FINAL CONFIRMATION\n\n**Send in NEW separate message (do not mix with Step 4):**\n\n[Name], your appointment is *confirmed*\n\n*Date:* DD/MM/YYYY\n*Time:* HH:MM AM/PM\n\n*Services:*\n1 Service Name\n2 Service Name\n(list all selected services)\n\n*Location:*\nHassaan Dental Clinic, Bahria Enclave, Islamabad\n\nWe look forward to seeing you!\n\n**END conversation or return to Main Menu**\n\n---\n\n## OPTION 1B: CANCEL/RESCHEDULE FLOW\n\n### STEP 1 - COLLECT INFORMATION\n\n**Message 1:** Please share your *full name*\n\n*Wait for response*\n\n**Message 2:** Please share your *WhatsApp number*\n\n*Wait for response*\n\n**Message 3:** Please share your *appointment date*\n\n*Wait for response*\n\n---\n\n### STEP 2 - CONFIRM DETAILS\n\n**Display:**\n\nPlease confirm your details:\n\n*1 Name:* [name]\n*2 Phone:* [phone]\n*3 Appointment Date:* [date]\n\nReply with:\n*YES* to confirm\n*NO* if incorrect\n\n*Wait for response*\n\n---\n\n### STEP 3 - IF YES\n\n**Display:**\n\nPlease contact clinic staff for cancel/reschedule:\n\n*Phone:* 0335-0600111\n*Phone:* 0337-0600111\n\n**ACTION:** Use *notify_doctor* tool with complete patient details and cancellation/reschedule request\n\n**END conversation**\n\n---\n\n### STEP 4 - IF NO\n\n**Display:**\n\nWhich detail is incorrect?\n\n*1 Name*\n*2 Phone*\n*3 Appointment Date*\n\n*Wait for response, correct the detail, then repeat Step 2*\n\n---\n\n## OPTION 2: SERVICES INFORMATION\n\n**Display exactly:**\n\nOur services with unit prices:\n\n*1 Scaling & Polishing* - 8,000 PKR\n*2 Root Canal / PMT* - 10,000 PKR\n*3 Zirconia Crown* - 20,000 PKR\n*4 PFM Crown* - 10,000 PKR\n*5 Basal Implant* - 70,000 PKR\n*6 Conventional Implant* - 95,000 PKR\n\n*Note:* Unit prices remain the same; total treatment cost may vary after clinical examination.\n\n**END or return to Main Menu**\n\n---\n\n## OPTION 3: CLINIC GENERAL INFORMATION\n\n**Display exactly:**\n\n*Hassaan Dental Clinic*\n\n*Location:* Bahria Enclave, Islamabad\n*Doctor:* Dr. Haris\n\n*Clinic Timings:*\nMonday to Friday: 9:00 AM - 8:00 PM\nSaturday: 9:00 AM - 1:00 PM\nSunday: Closed\n\n*Contact Numbers:*\n0335-0600111\n0337-0600111\n\n**END or return to Main Menu**\n\n---\n\n## OPTION 4: EMERGENCY CASE\n\n### STEP 1 - EMERGENCY TYPE\n\n**Display:**\n\nPlease select emergency reason:\n\n*1 Severe pain*\n*2 Swelling*\n*3 Bleeding*\n*4 Accident / Trauma*\n*5 Other*\n\n*Wait for response*\n\n**If \"Other\" selected:** Please briefly describe the emergency\n\n*Wait for response*\n\n**DO NOT proceed to Step 2 until emergency type is collected**\n\n---\n\n### STEP 2 - PATIENT DETAILS\n\n**Message 1:** Please share patient *name*\n\n*Wait for response*\n\n**Message 2:** Please share *phone number*\n\n*Wait for response*\n\n---\n\n### STEP 3 - ACTION\n\n**Display to patient:**\n\nPlease contact immediately:\n\n*Emergency Contact:*\n0335-0600111\n0337-0600111\n\n**ACTION:** Use *notify_doctor* tool with:\n- Patient name\n- Phone number\n- Emergency type/description\n- Action: Emergency Case\n\n**END conversation**\n\n---\n\n## OPTION 5: TALK TO DOCTOR\n\n### STEP 1 - PATIENT DETAILS\n\n**Message 1:** Please share your *name*\n\n*Wait for response*\n\n**Message 2:** Please share your *phone number*\n\n*Wait for response*\n\n---\n\n### STEP 2 - REASON\n\n**Display:**\n\nPlease select reason:\n\n*1 Treatment discussion*\n*2 Cost inquiry*\n*3 Follow-up*\n*4 Other*\n\n*Wait for response*\n\n**If \"Other\" selected:** Please briefly describe your reason\n\n**DO NOT proceed to Step 3 until name, phone, and reason are ALL collected**\n\n---\n\n### STEP 3 - ACTION\n\n**Display to patient:**\n\nPlease contact doctor/staff at:\n\n*Phone Numbers:*\n0335-0600111\n0337-0600111\n\n**ACTION:** Use *notify_doctor* tool with:\n- Name\n- Phone\n- Action: Talk to Doctor\n- Reason\n\n**END conversation**\n\n---\n\n## TOOLS DESCRIPTION (For Agent Use)\n\n**check_slots**\n- Reads Appointments_Slots sheet\n- Returns slots where Status = \"Free\" for specified date\n- Use before showing available times AND before confirming booking\n\n**book_slot**\n- Updates selected slot Status to \"Booked\"\n- Requires exact Date + Time match\n\n**add_data**\n- Saves patient information to PatientDetails sheet\n- Use after successful booking\n\n**booking_alert**\n- Sends new booking notification to doctor/staff\n- Include all booking details\n\n**notify_doctor**\n- Sends alerts for: Emergency, Cancel/Reschedule, Talk to Doctor\n- Include patient details and action type\n\n---\n\n## ABSOLUTE PROHIBITIONS\n\n**NEVER:**\n- Show \"INVALID RESPONSE\" text\n- Guess slot availability\n- Ask multiple questions in one message\n- Show tool logs or debug text\n- Mix languages after selection\n- Repeat the same message within a single response\n- Skip ahead in the step sequence\n- Combine different steps in the same message\n\n---\n\n## SYSTEM INFORMATION\n\n**Clinic Operating Hours:** 9:00 AM - 8:00 PM (Mon-Fri), 9:00 AM - 1:00 PM (Sat), Closed (Sun)\n**Current Date/Time:** {{ $now }}\n\n---\n",
+          "maxIterations": 5
+        }
+      },
+      "id": "797fcba0-46d8-4148-8209-d9bc9ba582b4",
+      "name": "Hassaan Clinic AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -16,
+        304
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        304
+      ],
+      "id": "d9fd5428-451e-424b-b6a4-cdfcabdc363d",
+      "name": "Send Response to Patient",
+      "webhookId": "7c94c3d3-3e89-4090-8334-b04ac371c228",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "JVEpjjZ1KmpbDRSY",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Purpose: Notify clinic staff immediately when patient confirms new booking\nInput Required:\n\nAction: \"Booked\"\nPatient Name\nDate: DD/MM/YYYY format\nTime: HH:mm format (e.g., 10:00, 13:30)\n\n\nUsage: Use immediately AFTER add_data completes successfully",
+        "operation": "send",
+        "phoneNumberId": "={{ $json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "923427936231",
+        "textBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text_Body', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTool",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        656
+      ],
+      "id": "4f6acf9e-a288-439f-a7cd-f280f3c8fd38",
+      "name": "booking_alert",
+      "webhookId": "94400bf3-64d3-4647-ab2e-b93231eaf86e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "JVEpjjZ1KmpbDRSY",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        624
+      ],
+      "id": "78d6244e-5d9f-4d62-b3f5-dfcee3979c69",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "J9hWUOiRLwbKxr7v",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Purpose: Append patient record to permanent database in Google Sheets\nInput: Patient name, phone number, service type(s), confirmed date, confirmed time\nUsage: Use ONLY ONCE per booking AFTER successful book_slot execution\nVERIFY: Check if data already sent before repeating to avoid duplicates",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY",
+          "mode": "list",
+          "cachedResultName": "DentalData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1327502041,
+          "mode": "list",
+          "cachedResultName": "PatientDetails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qnZRFfX0HiptyT6M5u5uOc1-QByDpWtrn8UGh_uEzdY/edit#gid=1327502041"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Phone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone', ``, 'string') }}",
+            "Appointment Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Appointment_Date', ``, 'string') }}",
+            "Appointment Time": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Appointment_Time', ``, 'string') }}",
+            "Reason for Visit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Reason_for_Visit', ``, 'string') }}",
+            "Source": "WhatsApp"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Appointment Date",
+              "displayName": "Appointment Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Appointment Time",
+              "displayName": "Appointment Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason for Visit",
+              "displayName": "Reason for Visit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "726ae45c-ccc8-4cbb-b3fd-cb2f890b9c9f",
+      "name": "add_data",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        672,
+        656
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gj1xHtfPYXCfezOU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2bfbbbb-b220-4368-9891-f1f3735f7478",
+              "name": "userMessage",
+              "value": "={{ $json.messages[0].text.body }}",
+              "type": "string"
+            },
+            {
+              "id": "05378893-7d27-4aa3-9552-0f69753fda3c",
+              "name": "userPhone",
+              "value": "={{ $json.contacts[0].wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "be6265e6-ac7d-488a-b28a-dffbe34d4c86",
+              "name": "receivedAt",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        304
+      ],
+      "id": "8d8844db-8846-4e1d-8085-201a4bb3b03f",
+      "name": "Input"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Purpose: Send urgent WhatsApp message to clinic staff via WhatsApp Business Cloud\nInput: Patient phone number, patient name, specific message/reason\nUsage: Use IMMEDIATELY if patient mentions:\n\nPain (severe pain, toothache)\nSwelling\nBleeding\nEmergency case\nAsks to talk to doctor\nCancel/Reschedule request\n\n\nAlso include: Action type (Emergency Case / Talk to Doctor / Cancel-Reschedule)",
+        "operation": "send",
+        "phoneNumberId": "={{ $json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "923427936231",
+        "textBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text_Body', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTool",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        656
+      ],
+      "id": "9bc17c05-4ec1-4e42-afca-5bb718cacc1b",
+      "name": "notify_doctor",
+      "webhookId": "94400bf3-64d3-4647-ab2e-b93231eaf86e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "JVEpjjZ1KmpbDRSY",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "en.pk#holiday@group.v.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Holidays in Pakistan"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        656
+      ],
+      "id": "26452e8f-78b9-4ac5-a821-0780212f3432",
+      "name": "book appointments",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "c3foMSq3CEdC1Ard",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_slots": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "book_slot": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hassaan Clinic AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Response to Patient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "booking_alert": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notify_doctor": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "book appointments": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hassaan Clinic AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "1424a0de-1590-4f3c-908a-835a71ad2ae2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3e828cf12b4b74ab84d92ac336956d88f428a0750b305cfda48251169808866"
+  },
+  "id": "aRvkccG5A8QNW1nDacVEZ",
+  "tags": []
+}
